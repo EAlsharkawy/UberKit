@@ -96,5 +96,7 @@ typedef void (^PromotionHandler) (UberPromotion *promotion, NSURLResponse *respo
 #pragma mark - Deep Linking
 
 - (void) openUberApp;
+- (BOOL) hasUberApp;
+- (void) openUberApp:(CLLocation*)pickupLocation uberUrl:(NSString*)url;
 
 @end
