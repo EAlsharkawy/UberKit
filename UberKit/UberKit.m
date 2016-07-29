@@ -380,6 +380,47 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
     }
 }
 
+-(BOOL) hasUberApp
+{
+    return [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"uber://"]];
+}
+
+- (void) openUberApp:(CLLocation *)pickupLocation uberUrl:(NSString *)uberUrl
+{
+    NSString* url = nil;
+    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"uber://"]])
+    {
+        //Uber is installed
+        url = [NSString stringWithFormat:@"uber://"];
+        if (self.clientID) {
+            url = [url stringByAppendingFormat:@"?client_id=%@",self.clientID];
+            if (pickupLocation) {
+                url = [url stringByAppendingFormat:@"&action=setPickup&pickup[latitude]=%f&pickup[longitude]=%f",pickupLocation.coordinate.latitude,pickupLocation.coordinate.longitude];
+            }
+        }
+    }
+    else
+    {
+#ifdef __UBER_BEY2OLLAK_URL__
+        if (!uberUrl || uberUrl.length == 0) {
+            url = @"https://get.uber.com/cl/egypt-bey2ollak/";
+        }
+        else
+            url = uberUrl;
+#else
+        url = [NSString stringWithFormat:@"https://m.uber.com/sign-up"];
+        if (self.clientID) {
+            url = [url stringByAppendingFormat:@"?client_id=%@",self.clientID];
+            if (pickupLocation) {
+                url = [url stringByAppendingFormat:@"&pickup_latitude=%f&pickup_longitude=%f",pickupLocation.coordinate.latitude,pickupLocation.coordinate.longitude];
+            }
+        }
+#endif
+    }
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+    
+}
+
 @end
 
 @implementation UberKit (Private)
